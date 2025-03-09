@@ -1,4 +1,4 @@
-[[CI Status](https://github.com/se-edu/addressbook-level3/workflows/Java%20CI/badge.svg)](https://github.com/AY2425S2-CS2103T-T09-1/tp/actions)
+[![CI Status](https://github.com/se-edu/addressbook-level3/workflows/Java%20CI/badge.svg)](https://github.com/se-edu/addressbook-level3/actions)
 
 ![Ui](docs/images/Ui.png)
 * This project is based on the AddressBook-Level3 project created by the [SE-EDU initiative](https://se-education.org). 
