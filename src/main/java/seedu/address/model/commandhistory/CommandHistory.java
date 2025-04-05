@@ -25,7 +25,7 @@ public class CommandHistory {
 
     /**
      * Adds the given command input to the history of last 10 commands.
-     * If the list exceeds 5, removes the oldest command.
+     * If the list exceeds 10, removes the oldest command.
      *
      * @param userInput The command to add to the history.
      */

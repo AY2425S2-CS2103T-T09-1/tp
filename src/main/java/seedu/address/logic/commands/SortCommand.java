@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import seedu.address.logic.Messages;
+import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
 
@@ -35,7 +36,7 @@ public class SortCommand extends Command {
     }
 
     @Override
-    public CommandResult execute(Model model) {
+    public CommandResult execute(Model model) throws CommandException {
         Comparator<Person> comparator = createComparator(fields);
 
         if (isReverse) {
@@ -62,8 +63,8 @@ public class SortCommand extends Command {
             case "phone" -> (p1, p2) -> p1.getPhone().toString().compareToIgnoreCase(p2.getPhone().toString());
             case "email" -> (p1, p2) -> p1.getEmail().toString().compareToIgnoreCase(p2.getEmail().toString());
             case "address" -> (p1, p2) -> p1.getAddress().toString().compareToIgnoreCase(p2.getAddress().toString());
-            case "tags" -> Comparator.comparingInt(p -> p.getTags().size());
-            case "socials" -> Comparator.comparingInt(p -> p.getSocials().size());
+            case "tags" -> (p1, p2) -> p1.getTags().toString().compareToIgnoreCase(p2.getTags().toString());
+            case "socials" -> (p1, p2) -> p1.getSocials().toString().compareToIgnoreCase(p2.getSocials().toString());
             default -> null;
         };
 

@@ -31,11 +31,23 @@ public class RelationshipContainsKeywordsAsSubstringPredicate implements Predica
     @Override
     public boolean test(Person person) {
         ObservableList<Relationship> relationships = model.getFilteredRelationshipList();
-        return relationships.stream().anyMatch(relationship ->
-                person.getId().equals(relationship.getFirstUserId())
-                        || person.getId().equals(relationship.getSecondUserId()));
+        return relationships.stream().anyMatch(relationship -> {
+            if (person.getId().equals(relationship.getFirstUserId())) {
+                return keywords.stream().anyMatch(keyword ->
+                        relationship.getForwardName() != null
+                                && containsSubstringIgnoreCase(relationship.getForwardName(), keyword));
+            }
+            if (person.getId().equals(relationship.getSecondUserId())) {
+                return keywords.stream().anyMatch(keyword ->
+                        relationship.getReverseName() != null
+                                && containsSubstringIgnoreCase(relationship.getReverseName(), keyword));
+            }
+            return false;
+        });
     }
-
+    private boolean containsSubstringIgnoreCase(String role, String keyword) {
+        return role.toLowerCase().contains(keyword.toLowerCase());
+    }
     @Override
     public boolean equals(Object other) {
         if (other == this) {

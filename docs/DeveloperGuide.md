@@ -290,7 +290,9 @@ The `findName`, `findEmail`, `findPhone`, `findAddress`, `findSocial`, `findTag`
 *   **Mechanism:** Each `findXYZ` command uses a corresponding `XYZContainsKeywordsAsSubstringPredicate` (e.g., `NameContainsKeywordsAsSubstringPredicate`).
 *   **Predicate Logic:** Inside the `test` method of each predicate, it streams through the user-provided keywords. For each keyword, it checks if the relevant field in the `Person` object (e.g., `person.getName().fullName`) contains the keyword as a substring, ignoring case (`toLowerCase().contains(keyword.toLowerCase())`). The predicate returns `true` if *any* keyword matches as a substring within the field.
 *   **Example (`findName`):** If a person's name is "Alex Yeoh", `findName Alex` will match, `findName Yeoh` will match, and `findName lex` will also match.
-*   **Rationale:** Substring matching provides more flexibility for users who may not remember the exact full name, email, etc., allowing for partial matches.
+* **Rationale:** Substring matching provides more flexibility for users who may not remember the exact full name, email, etc., allowing for partial matches.
+*   **Special Note for `findRelationship`:** The current implementation of `RelationshipContainsKeywordsAsSubstringPredicate` checks whether the role name in the relationship matches the specified keyword. It should filter persons based on their specific role name in the relationship matching the keyword
+*   **Example (`findRelationship`):** In a relationship where Person A has role "Boss" and Person B has role "Employee", `findRelationship Boss` should return only Person A and `findRelationship Employee` should return only Person B
 
 **Sequence Diagram Example (`findName`):**
 
@@ -300,23 +302,35 @@ The `findName`, `findEmail`, `findPhone`, `findAddress`, `findSocial`, `findTag`
 
 ### Sort Command
 
-The `sort` command allows sorting the displayed person list based on one or more fields (`name`, `phone`, `email`, `address`, `tags`, `socials`).
+The `sort` command allows sorting the displayed person list based on one or more fields (`name`, `phone`, `email`, `address`, `tags`, `socials`). Field names are case-insensitive, so both `sort name` and `sort Name` will work the same way.
 
 *   **Mechanism:** The `SortCommandParser` parses the field names and an optional `-r` flag for reverse order. The `SortCommand` then creates a `Comparator<Person>` based on the specified fields.
-*   **Comparator Creation:** It starts with a comparator for the first field. For subsequent fields, it uses `thenComparing` to chain the sorting criteria. Sorting for `tags` and `socials` is currently based on the *number* of tags/socials. String fields (`name`, `phone`, `email`, `address`) use case-insensitive comparison.
+*   **Comparator Creation:** It starts with a comparator for the first field. For subsequent fields, it uses `thenComparing` to chain the sorting criteria. String fields (`name`, `phone`, `email`, `address`) use case-insensitive comparison. Collection fields (`tags`, `socials`) are compared using their string representation (HashSet's `toString()` method), which means sorting is based on the lexicographical comparison of their string values rather than individual elements or properties of the sets.
 *   **Execution:** The `SortCommand` calls `Model.updateSortedPersonList(comparator)`, which in turn calls `AddressBook.sortPersons(comparator)`. This sorts the underlying `UniquePersonList` within the `AddressBook`. Since the `FilteredList` in `ModelManager` wraps the `ObservableList` from `AddressBook`, changes in the source list's order are reflected in the filtered/sorted list displayed in the UI.
 
 **Sequence Diagram:**
 
 <img src="images/SortSequenceDiagram.png" alt="SortSequenceDiagram"/>
 
-### Redo Command
+### Important Note on Character Encoding
+
+**Limitation:** The case-insensitive substring matching in all find commands (`findName`, `findEmail`, etc.) and sorting operations work properly only with standard English alphabet characters. When using non-ASCII characters, especially those with special case mappings (like Turkish İ/ı and I/i), the behavior is undefined.
+
+**Technical Explanation:** The implementation uses Java's `toLowerCase()` method without specifying a locale, which applies default case mapping rules. This doesn't correctly handle locale-specific case mappings such as Turkish dotted/dotless i characters (where lowercase 'ı' corresponds to uppercase 'I', and lowercase 'i' corresponds to uppercase 'İ'). Similarly, sorting operations may not produce expected results when comparing strings with non-ASCII characters.
+
+**Example of Issue:**
+- When searching with Turkish characters, queries like `add n/A s/İ add n/B s/I findSocial s/I` may return unexpected results (returns both persons when only B should match).
+- When sorting lists containing non-ASCII characters, the order may not follow expected collation rules for certain languages and alphabets.
+
+**Workaround:** For reliable results, users should avoid non-ASCII characters in search queries and sortable fields, or be aware that case-insensitive matching and sorting might not work as expected with certain alphabets.
+
+### Redo Command and Redo List Command
 
 The `redo` and `redoList` commands allow users to re-execute or view recently executed commands.
 
-*   **`CommandHistory` Class:** A static class (`seedu.address.model.commandhistory.CommandHistory`) maintains a `Deque<String>` (double-ended queue) called `lastCommands`.
+*   **`CommandHistory` Class:** A static class (`seedu.address.model.commandhistory.CommandHistory`) maintains a `Deque<String>` (double-ended queue) called `lastCommands`. This history is session-based and does not persist between program executions; it is initialized as empty when the application starts and cleared when the application is terminated.
 *   **Adding Commands:** After a command is successfully parsed and *before* it's executed by `LogicManager`, the original command string is added to the front of the `lastCommands` deque using `CommandHistory.addCommandToHistory(userInput)`. If the deque size exceeds 10, the oldest command (at the end) is removed. Commands like `redo` itself are not added to the history to prevent recursive loops.
-*   **`redoList` Command:** This command retrieves all commands from the `CommandHistory` deque and formats them into a numbered list for display to the user via a `CommandResult` (currently thrown as a `CommandException` for display).
+*   **`redoList` Command:** This command retrieves all commands from the `CommandHistory` deque and formats them into a numbered list for display to the user (currently thrown as a `CommandException` for display). The list only shows successfully executed commands from the current session, up to a maximum of 10 commands.
 *   **`redo N` Command:**
     1.  Parses the integer `N`.
     2.  Validates `N` (must be between 1 and 10).
@@ -324,6 +338,12 @@ The `redo` and `redoList` commands allow users to re-execute or view recently ex
     4.  Creates a *new* `AddressBookParser` instance.
     5.  Calls `parseCommand` on the retrieved command string.
     6.  Executes the resulting `Command` object. The result of *this* execution is returned to the user.
+
+Sequence Diagram for Redo Command:
+<img src="images/RedoSequenceDiagram.png" alt="RedoSequenceDiagram"/>
+
+Sequence Diagram for Redo List Command:
+<img src="images/RedoListSequenceDiagram.png" alt="RedoListSequenceDiagram"/>
 
 **Design Considerations:**
 
@@ -1060,10 +1080,10 @@ testers are expected to do more *exploratory* testing.
     1.  Prerequisites: Add relationships: `addRelationship u/ID1 u/ID2 fn/Business Partner rn/Business Partner t/Tech`, `addRelationship u/ID1 u/ID3 fn/Investor rn/Investee t/Finance`.
     2.  Test case: `findRelationship Partner`
         Expected: Persons with ID1 and ID2 are listed.
-    3.  Test case: `findRelationship Invest`
-        Expected: Persons with ID1 and ID3 are listed.
+    3.  Test case: `findRelationship Investor`
+        Expected: Persons with ID1 are listed.
     4.  Test case: `findRelationship Tech` (finding by relationship tag - *verify if this is supported by the predicate*)
-        Expected: *If supported:* Persons ID1 and ID2 listed. *If not supported:* 0 persons listed or only matches relationship name. **(Note: The current `RelationshipContainsKeywordsAsSubstringPredicate` only checks if the person is *involved* in *any* relationship when the command is run, not if the relationship *itself* matches the keyword. This needs correction in the predicate or command logic to be useful.)**
+        Expected: 0 persons listed **(Note: The current `RelationshipContainsKeywordsAsSubstringPredicate` only checks if the person is *involved* in *any* relationship name role when the command is run, not if the relationship *itself* matches the keyword.)**
 
 ### Sort Command
 
@@ -1081,12 +1101,13 @@ testers are expected to do more *exploratory* testing.
     1.  Test case: `sort invalidField`
         Expected: Error message "Invalid field: invalidField".
 
-### Redo Commands
+### Redo and Redo List Commands
 
 1.  List command history
     1.  Prerequisites: Execute several valid commands (e.g., `list`, `add n/Test`, `delete 1`).
     2.  Test case: `redoList`
         Expected: A numbered list of the recently executed commands (up to 10) is displayed in the result area (possibly as an error message, based on current implementation). `redo` commands themselves should not appear.
+    **Note: redoList only keeps track of the command history of the last 10 commands, and this history will be cleared when the program is terminated.**
 2.  Redo a command
     1.  Prerequisites: Execute `add n/RedoTestPerson`. Then execute `list`. The `add` command should be at index 2 in `redoList`.
     2.  Test case: `redo 2`

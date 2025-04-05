@@ -14,6 +14,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
@@ -68,7 +69,7 @@ public class SortCommandTest {
     }
 
     @Test
-    public void execute_sortByName_success() {
+    public void execute_sortByName_success() throws CommandException {
         List<String> fields = Arrays.asList("name");
         SortCommand command = new SortCommand(false, fields);
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW,
@@ -90,7 +91,7 @@ public class SortCommandTest {
     }
 
     @Test
-    public void execute_sortByNameReversed_success() {
+    public void execute_sortByNameReversed_success() throws CommandException {
         List<String> fields = Arrays.asList("name");
         SortCommand command = new SortCommand(true, fields);
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW,
@@ -112,7 +113,7 @@ public class SortCommandTest {
     }
 
     @Test
-    public void execute_sortByPhone_success() {
+    public void execute_sortByPhone_success() throws CommandException {
         List<String> fields = Arrays.asList("phone");
         SortCommand command = new SortCommand(false, fields);
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW,
@@ -134,7 +135,7 @@ public class SortCommandTest {
     }
 
     @Test
-    public void execute_sortByEmail_success() {
+    public void execute_sortByEmail_success() throws CommandException {
         List<String> fields = Arrays.asList("email");
         SortCommand command = new SortCommand(false, fields);
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW,
@@ -156,7 +157,7 @@ public class SortCommandTest {
     }
 
     @Test
-    public void execute_sortByAddress_success() {
+    public void execute_sortByAddress_success() throws CommandException {
         List<String> fields = Arrays.asList("address");
         SortCommand command = new SortCommand(false, fields);
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW,
@@ -176,17 +177,17 @@ public class SortCommandTest {
             assertEquals(expectedList.get(i), modelList.get(i));
         }
     }
-
     @Test
-    public void execute_sortByTags_success() {
+    public void execute_sortByTags_success() throws CommandException {
         List<String> fields = Arrays.asList("tags");
         SortCommand command = new SortCommand(false, fields);
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW,
                 expectedModel.getFilteredPersonList().size());
 
-        Comparator<Person> tagsComparator = Comparator.comparingInt(p -> p.getTags().size());
-        expectedModel.updateSortedPersonList(tagsComparator);
+        Comparator<Person> tagsComparator = (
+                p1, p2) -> p1.getTags().toString().compareToIgnoreCase(p2.getTags().toString());
 
+        expectedModel.updateSortedPersonList(tagsComparator);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
 
         // Verify that the lists are sorted the same way
@@ -199,15 +200,16 @@ public class SortCommandTest {
     }
 
     @Test
-    public void execute_sortBySocials_success() {
+    public void execute_sortBySocials_success() throws CommandException {
         List<String> fields = Arrays.asList("socials");
         SortCommand command = new SortCommand(false, fields);
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW,
                 expectedModel.getFilteredPersonList().size());
 
-        Comparator<Person> socialsComparator = Comparator.comparingInt(p -> p.getSocials().size());
-        expectedModel.updateSortedPersonList(socialsComparator);
+        Comparator<Person> socialsComparator = (
+                p1, p2) -> p1.getSocials().toString().compareToIgnoreCase(p2.getSocials().toString());
 
+        expectedModel.updateSortedPersonList(socialsComparator);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
 
         // Verify that the lists are sorted the same way
@@ -220,7 +222,7 @@ public class SortCommandTest {
     }
 
     @Test
-    public void execute_sortByMultipleFields_success() {
+    public void execute_sortByMultipleFields_success() throws CommandException {
         List<String> fields = Arrays.asList("name", "phone");
         SortCommand command = new SortCommand(false, fields);
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW,
@@ -243,7 +245,149 @@ public class SortCommandTest {
             assertEquals(expectedList.get(i), modelList.get(i));
         }
     }
+    @Test
+    public void execute_sortByTagsThenAddress_success() throws CommandException {
+        List<String> fields = Arrays.asList("tags", "address");
+        SortCommand command = new SortCommand(false, fields);
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW,
+                expectedModel.getFilteredPersonList().size());
 
+        Comparator<Person> tagsComparator = (
+                p1, p2) -> p1.getTags().toString().compareToIgnoreCase(p2.getTags().toString());
+        tagsComparator = tagsComparator.thenComparing((
+                p1, p2) -> p1.getAddress().toString().compareToIgnoreCase(p2.getAddress().toString()));
+
+        expectedModel.updateSortedPersonList(tagsComparator);
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+
+        // Verify that the lists are sorted the same way
+        List<Person> modelList = model.getFilteredPersonList();
+        List<Person> expectedList = expectedModel.getFilteredPersonList();
+        assertEquals(expectedList.size(), modelList.size());
+        for (int i = 0; i < modelList.size(); i++) {
+            assertEquals(expectedList.get(i), modelList.get(i));
+        }
+    }
+
+    @Test
+    public void execute_sortByEmailThenTags_success() throws CommandException {
+        List<String> fields = Arrays.asList("email", "tags");
+        SortCommand command = new SortCommand(false, fields);
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW,
+                expectedModel.getFilteredPersonList().size());
+
+        Comparator<Person> emailComparator = (
+                p1, p2) -> p1.getEmail().toString().compareToIgnoreCase(p2.getEmail().toString());
+        emailComparator = emailComparator.thenComparingInt(p -> p.getTags().size());
+
+        expectedModel.updateSortedPersonList(emailComparator);
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+
+        // Verify that the lists are sorted the same way
+        List<Person> modelList = model.getFilteredPersonList();
+        List<Person> expectedList = expectedModel.getFilteredPersonList();
+        assertEquals(expectedList.size(), modelList.size());
+        for (int i = 0; i < modelList.size(); i++) {
+            assertEquals(expectedList.get(i), modelList.get(i));
+        }
+    }
+
+    @Test
+    public void execute_sortByPhoneThenSocials_success() throws CommandException {
+        List<String> fields = Arrays.asList("phone", "socials");
+        SortCommand command = new SortCommand(false, fields);
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW,
+                expectedModel.getFilteredPersonList().size());
+
+        Comparator<Person> phoneComparator = (
+                p1, p2) -> p1.getPhone().toString().compareToIgnoreCase(p2.getPhone().toString());
+        phoneComparator = phoneComparator.thenComparingInt(p -> p.getSocials().size());
+
+        expectedModel.updateSortedPersonList(phoneComparator);
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+
+        // Verify that the lists are sorted the same way
+        List<Person> modelList = model.getFilteredPersonList();
+        List<Person> expectedList = expectedModel.getFilteredPersonList();
+        assertEquals(expectedList.size(), modelList.size());
+        for (int i = 0; i < modelList.size(); i++) {
+            assertEquals(expectedList.get(i), modelList.get(i));
+        }
+    }
+
+    @Test
+    public void execute_sortByThreeFields_success() throws CommandException {
+        List<String> fields = Arrays.asList("name", "phone", "email");
+        SortCommand command = new SortCommand(false, fields);
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW,
+                expectedModel.getFilteredPersonList().size());
+
+        Comparator<Person> multiFieldComparator = (
+                p1, p2) -> p1.getName().toString().compareToIgnoreCase(p2.getName().toString());
+        multiFieldComparator = multiFieldComparator.thenComparing((
+                p1, p2) -> p1.getPhone().toString().compareToIgnoreCase(p2.getPhone().toString()));
+        multiFieldComparator = multiFieldComparator.thenComparing((
+                p1, p2) -> p1.getEmail().toString().compareToIgnoreCase(p2.getEmail().toString()));
+
+        expectedModel.updateSortedPersonList(multiFieldComparator);
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+
+        // Verify that the lists are sorted the same way
+        List<Person> modelList = model.getFilteredPersonList();
+        List<Person> expectedList = expectedModel.getFilteredPersonList();
+        assertEquals(expectedList.size(), modelList.size());
+        for (int i = 0; i < modelList.size(); i++) {
+            assertEquals(expectedList.get(i), modelList.get(i));
+        }
+    }
+
+    @Test
+    public void execute_sortByTagsReversed_success() throws CommandException {
+        List<String> fields = Arrays.asList("tags");
+        SortCommand command = new SortCommand(true, fields);
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW,
+                expectedModel.getFilteredPersonList().size());
+
+        Comparator<Person> tagsComparator = (
+                p1, p2) -> p1.getTags().toString().compareToIgnoreCase(p2.getTags().toString());
+        expectedModel.updateSortedPersonList(tagsComparator.reversed());
+
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+
+        // Verify that the lists are sorted the same way
+        List<Person> modelList = model.getFilteredPersonList();
+        List<Person> expectedList = expectedModel.getFilteredPersonList();
+        assertEquals(expectedList.size(), modelList.size());
+        for (int i = 0; i < modelList.size(); i++) {
+            assertEquals(expectedList.get(i), modelList.get(i));
+        }
+    }
+
+    @Test
+    public void execute_sortByMultipleFieldsReversed_success() throws CommandException {
+        List<String> fields = Arrays.asList("name", "phone", "email");
+        SortCommand command = new SortCommand(true, fields);
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW,
+                expectedModel.getFilteredPersonList().size());
+
+        Comparator<Person> multiFieldComparator = (
+                p1, p2) -> p1.getName().toString().compareToIgnoreCase(p2.getName().toString());
+        multiFieldComparator = multiFieldComparator.thenComparing((
+                p1, p2) -> p1.getPhone().toString().compareToIgnoreCase(p2.getPhone().toString()));
+        multiFieldComparator = multiFieldComparator.thenComparing((
+                p1, p2) -> p1.getEmail().toString().compareToIgnoreCase(p2.getEmail().toString()));
+
+        expectedModel.updateSortedPersonList(multiFieldComparator.reversed());
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+
+        // Verify that the lists are sorted the same way
+        List<Person> modelList = model.getFilteredPersonList();
+        List<Person> expectedList = expectedModel.getFilteredPersonList();
+        assertEquals(expectedList.size(), modelList.size());
+        for (int i = 0; i < modelList.size(); i++) {
+            assertEquals(expectedList.get(i), modelList.get(i));
+        }
+    }
     @Test
     public void testToString() {
         List<String> fields = Arrays.asList("name", "phone");

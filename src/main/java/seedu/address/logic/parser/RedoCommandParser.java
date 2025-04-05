@@ -19,7 +19,7 @@ public class RedoCommandParser implements Parser<RedoCommand> {
     public RedoCommand parse(String args) throws ParseException {
         try {
             int commandIndex = Integer.parseInt(args.trim());
-            if (commandIndex < 1 || commandIndex > 5) {
+            if (commandIndex < 1 || commandIndex > 10) {
                 throw new ParseException(
                         String.format(MESSAGE_INVALID_COMMAND_FORMAT, RedoCommand.MESSAGE_USAGE));
             }

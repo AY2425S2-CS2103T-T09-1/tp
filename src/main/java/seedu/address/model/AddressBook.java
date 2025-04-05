@@ -10,6 +10,7 @@ import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.event.Event;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.UniquePersonList;
@@ -116,7 +117,7 @@ public class AddressBook implements ReadOnlyAddressBook {
      *
      * @param comparator The comparator to use for sorting.
      */
-    public void sortPersons(Comparator<? super Person> comparator) {
+    public void sortPersons(Comparator<? super Person> comparator) throws CommandException {
         requireNonNull(comparator);
         persons.sortPersons(comparator);
     }

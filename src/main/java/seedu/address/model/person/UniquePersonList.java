@@ -9,6 +9,7 @@ import java.util.List;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.person.exceptions.DuplicatePersonException;
 import seedu.address.model.person.exceptions.PersonNotFoundException;
 
@@ -102,14 +103,14 @@ public class UniquePersonList implements Iterable<Person> {
      * Sorts the internal list of persons using the provided comparator.
      * Catches any exceptions that might occur during sorting.
      */
-    public void sortPersons(Comparator<? super Person> comparator) {
+    public void sortPersons(Comparator<? super Person> comparator) throws CommandException {
         requireNonNull(comparator);
         try {
-            FXCollections.sort(internalList, comparator); // Attempt to sort
-        } catch (ClassCastException e) {
-            System.err.println("Error: The elements cannot be compared using the provided comparator.");
+            FXCollections.sort(internalList, comparator);
         } catch (Exception e) {
-            System.err.println("An error occurred while sorting the persons list: " + e.getMessage());
+            throw new CommandException("An error occurred while sorting the persons list: "
+                    + "Possible error is one of the sorting fields in some person is null. "
+                    + "Please add sufficient value to sort properly.", e);
         }
     }
 

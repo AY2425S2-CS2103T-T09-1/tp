@@ -80,12 +80,12 @@ public class FindRelationshipCommandTest {
 
     @Test
     public void execute_zeroKeywords_noPersonFound() {
-        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 2);
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 0);
         RelationshipContainsKeywordsAsSubstringPredicate predicate = preparePredicate(" ", model);
         FindRelationshipCommand command = new FindRelationshipCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(Arrays.asList(ALICE, BENSON), model.getFilteredPersonList());
+        assertEquals(Arrays.asList(), model.getFilteredPersonList());
     }
 
     @Test

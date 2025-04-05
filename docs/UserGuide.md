@@ -361,17 +361,20 @@ Format: `findSocial KEYWORD [MORE_KEYWORDS]`
 
 Examples:
 * `findSocial facebook twitter linkedin`
-
 ---
 ### Locating persons by relationship: `findRelationship`
-Finds persons whose relationships contain any of the given keywords as a substring.  
-Format: `findRelationship KEYWORD [MORE_KEYWORDS]`
-* Only the relationship field is searched.
+
+Finds persons involved in relationships where their role in any relationship contains any of the given keywords as a substring.
+
+**Format**: `findRelationship KEYWORD [MORE_KEYWORDS]`
+
+* Only the role names in relationships are searched.
 * The search is case-insensitive.
+* **Important**: The command returns **only the person whose role** in the relationship contains the search keyword.
+* For example, if Person A has a relationship "Boss" with Person B whose relationship is "Employee", searching for `findRelationship Boss` will return only Person A, because their role contains the keyword "Boss".
 
-Examples:
-* `findRelationship family friend`
-
+**Examples**:
+* `findRelationship family friend` returns all persons where their role in any relationship containing "family" or "friend" as substrings.
 ---
 ### Locating persons by tag: `findTag`
 Finds persons whose tags contain any of the given keywords as a substring.  
@@ -381,6 +384,14 @@ Format: `findTag KEYWORD [MORE_KEYWORDS]`
 
 Examples:
 * `findTag colleague important`
+---
+### Important Note on Character Encoding for Find Commands
+
+**Note:** All find commands (`findName`, `findPhone`, etc.) work best with standard English alphabet characters. When using special characters or non-English alphabets (such as Turkish, Chinese, etc.), search results may be unexpected.
+
+**Example:** Searching for names with special characters might return more or fewer results than expected.
+
+**Recommendation:** For best results, use standard English characters in your your contact information.
 
 ---
 ### Sorting the Address Book: `sort`
@@ -391,34 +402,50 @@ Sorts the address book by one or more fields.
 * The `-r` flag reverses the sorting order.
 * You can sort by multiple fields (e.g., name, phone, email, address, tags).
 * Only the specified fields will be considered in the sort.
+* Sorting is performed lexicographically by the first field first, then by the second field for entries with identical first field values, and so on.
 
 **Examples**:
 * `sort -r name phone` sorts the address book by name and phone in reverse order.
 * `sort email` sorts the address book by email.
+---
+
+### Important Note on Character Encoding for Sort Commands
+
+**Note:** The sort functionality works best with standard English alphabet characters. When sorting entries containing special characters or non-English alphabets, the sorting order may not follow expected language-specific rules.
+
+**Recommendation:** For predictable sorting results, use standard English characters in your contact information.
 
 ---
-### Redoing a Previous Command: `redo`
-Re-executes the x-th last command.
+### Re-executing Commands: `redo`
+
+Re-executes a command from your command history.
 
 **Format**: `redo COMMAND_NUMBER`
-
-* The `COMMAND_NUMBER` must be between 1 and 10, indicating the position of the command in the history.
+* The *`COMMAND_NUMBER`* must be between 1 and 10, indicating the position of the command in the history.
 * This command allows you to quickly redo previous actions.
+* Command history is session-based and will be cleared when the application is terminated.
 
 **Examples**:
-* `redo 3` re-executes the third last command.
+* *`redo 3`* re-executes the third last command.
 
 ---
-### Listing the Last 10 Commands: `redoList`
-Lists the last 10 commands in the command history.
+
+### Listing the Command History: `redoList`
+
+Lists your command history from the current session.
 
 **Format**: `redoList`
-
-* This command provides a history of the last 10 commands, allowing you to track the sequence of executed commands.
-* If fewer than 10 commands exist, all available commands will be listed.
+* This command displays a numbered list of successfully executed commands from your current session.
+* Only stores up to 10 most recent commands.
+* Command history is reset when you close the application.
+* `redo` commands themselves do not appear in this history.
 
 **Example**:
-* `redoList` lists the last 10 commands executed (or fewer if less than 10 exist).
+* `redoList` lists the most recent commands executed (up to 10)
+---
+### Archiving data files `[coming in v2.0]`
+
+_Details coming soon ..._
 
 --------------------------------------------------------------------------------------------------------------------
 

@@ -12,6 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.event.Event;
 import seedu.address.model.person.Person;
 import seedu.address.model.relationship.Relationship;
@@ -135,12 +136,6 @@ public class ModelManager implements Model {
 
     @Override
     public ObservableList<Person> getSortedFilteredPersonList() {
-        //        List<Person> personList = new ArrayList<>(filteredPersons);
-        //        if (sortComparator != null) {
-        //            personList.sort(sortComparator);
-        //            logger.info("we have comparator");
-        //        }
-
         return filteredPersons;
     }
 
@@ -151,7 +146,7 @@ public class ModelManager implements Model {
     }
 
     @Override
-    public void updateSortedPersonList(Comparator<Person> comparator) {
+    public void updateSortedPersonList(Comparator<Person> comparator) throws CommandException {
         this.addressBook.sortPersons(comparator);
     }
 
