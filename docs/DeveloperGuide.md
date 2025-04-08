@@ -1015,9 +1015,9 @@ testers are expected to do more *exploratory* testing.
         Expected: Success message. A new contact "NewContactName" with default details should be added to the main contact list. Both David Li and NewContactName should be associated with the event.
 2.  Add event with missing required fields
     1.  Test case: `addEvent d/today`
-        Expected: Error message indicating event name (`en/`) is missing.
+        Expected: Error message indicating required parameter for events.
     2.  Test case: `addEvent en/Party l/Home`
-        Expected: Error message indicating date (`d/`) is missing.
+        Expected: Error message indicating required parameter for events.
 3.  Add event with invalid date
     1.  Test case: `addEvent en/Invalid Date Event d/invalid-date-format`
         Expected: Error message indicating the date could not be parsed.

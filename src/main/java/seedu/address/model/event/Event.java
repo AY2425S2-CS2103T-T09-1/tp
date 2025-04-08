@@ -78,6 +78,9 @@ public class Event {
         this.description = description;
         this.tags.addAll(tags);
         this.contacts = contacts;
+
+        int numericId = Integer.parseInt(id);
+        this.COUNTER.updateAndGet(current -> Math.max(current, numericId + 1));
     }
 
     /**
