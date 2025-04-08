@@ -545,7 +545,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 1. Startup founder requests to find persons by relationship in the address book
 2. INcontact parses the request to extract the specified relationship keywords
-3. INcontact searches for persons whose relationship contains any of the specified keywords as a substring (case-insensitive)
+3. INcontact searches for persons where their relationship role in any relationship contains any of the specified keywords as a substring (case-insensitive)
 4. INcontact displays the list of persons matching the search criteria with index numbers
 5. Startup founder reviews the list of persons
 
@@ -644,7 +644,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 2a. The user does not specify any sorting fields.
 
-    * 2a1. INcontact shows an error message indicating that sorting fields are required.
+    * 2a1. INcontact shows an error message indicating that indicating the invalid command format.
 
   Use case ends.
 
@@ -654,17 +654,12 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
   Use case ends.
 
-* 4a. The reverse flag is specified but no fields are provided.
-
-    * 4a1. INcontact shows an error message indicating that sorting fields are required along with the reverse flag.
-
-  Use case ends.
-
 * 5a. The user requests sorting by multiple fields.
 
     * 5a1. INcontact sorts the address book first by the primary field, then by subsequent fields.
 
   Use case resumes at step 4.
+
 ---
 **Use case: UC9 - Redo a previously executed command**
 
@@ -704,6 +699,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 5a1. INcontact shows an error message indicating that there was an issue re-executing the command.
 
   Use case ends.
+
 ---
 **Use case: UC10 - List the last 10 commands in the command history**
 
@@ -730,6 +726,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 3a1. INcontact shows an error message indicating that there was an issue retrieving the command history.
 
   Use case ends.
+
 ---
 
 **Use Case: UC-AddRel - Add a Relationship**
