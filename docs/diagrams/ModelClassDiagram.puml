@@ -69,15 +69,6 @@ Event *--> "1" Description : description
 Event *--> "*" Tag : tags
 Event *--> "1" UniquePersonList : contacts
 
-AddressBook *--> "*" Event
-
-Event *--> "1" Name : name
-Event *--> "1" Date : date
-Event *--> "1" Location : location
-Event *--> "1" Description : description
-Event *--> "*" Tag : tags
-Event *--> "1" UniquePersonList : contacts
-
 Person -[hidden]up--> I
 UniquePersonList -[hidden]right-> I
 
