@@ -312,17 +312,6 @@ The `sort` command allows sorting the displayed person list based on one or more
 
 <img src="images/SortSequenceDiagram.png" alt="SortSequenceDiagram"/>
 
-### Important Note on Character Encoding
-
-**Limitation:** The case-insensitive substring matching in all find commands (`findName`, `findEmail`, etc.) and sorting operations work properly only with standard English alphabet characters. When using non-ASCII characters, especially those with special case mappings (like Turkish İ/ı and I/i), the behavior is undefined.
-
-**Technical Explanation:** The implementation uses Java's `toLowerCase()` method without specifying a locale, which applies default case mapping rules. This doesn't correctly handle locale-specific case mappings such as Turkish dotted/dotless i characters (where lowercase 'ı' corresponds to uppercase 'I', and lowercase 'i' corresponds to uppercase 'İ'). Similarly, sorting operations may not produce expected results when comparing strings with non-ASCII characters.
-
-**Example of Issue:**
-- When searching with Turkish characters, queries like `add n/A s/İ add n/B s/I findSocial s/I` may return unexpected results (returns both persons when only B should match).
-- When sorting lists containing non-ASCII characters, the order may not follow expected collation rules for certain languages and alphabets.
-
-**Workaround:** For reliable results, users should avoid non-ASCII characters in search queries and sortable fields, or be aware that case-insensitive matching and sorting might not work as expected with certain alphabets.
 
 ### Redo Command and Redo List Command
 
@@ -545,7 +534,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 1. Startup founder requests to find persons by relationship in the address book
 2. INcontact parses the request to extract the specified relationship keywords
-3. INcontact searches for persons whose relationship contains any of the specified keywords as a substring (case-insensitive)
+3. INcontact searches for persons where their relationship role in any relationship contains any of the specified keywords as a substring (case-insensitive)
 4. INcontact displays the list of persons matching the search criteria with index numbers
 5. Startup founder reviews the list of persons
 
@@ -644,7 +633,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 2a. The user does not specify any sorting fields.
 
-    * 2a1. INcontact shows an error message indicating that sorting fields are required.
+    * 2a1. INcontact shows an error message indicating that indicating the invalid command format.
 
   Use case ends.
 
@@ -654,17 +643,12 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
   Use case ends.
 
-* 4a. The reverse flag is specified but no fields are provided.
-
-    * 4a1. INcontact shows an error message indicating that sorting fields are required along with the reverse flag.
-
-  Use case ends.
-
 * 5a. The user requests sorting by multiple fields.
 
     * 5a1. INcontact sorts the address book first by the primary field, then by subsequent fields.
 
   Use case resumes at step 4.
+
 ---
 **Use case: UC9 - Redo a previously executed command**
 
@@ -704,6 +688,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 5a1. INcontact shows an error message indicating that there was an issue re-executing the command.
 
   Use case ends.
+
 ---
 **Use case: UC10 - List the last 10 commands in the command history**
 
@@ -730,6 +715,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 3a1. INcontact shows an error message indicating that there was an issue retrieving the command history.
 
   Use case ends.
+
 ---
 
 **Use Case: UC-AddRel - Add a Relationship**
@@ -1111,7 +1097,7 @@ testers are expected to do more *exploratory* testing.
 2.  Redo a command
     1.  Prerequisites: Execute `add n/RedoTestPerson`. Then execute `list`. The `add` command should be at index 2 in `redoList`.
     2.  Test case: `redo 2`
-        Expected: The `add n/RedoTestPerson` command is executed again. An error "This person already exists..." should appear because the person was already added.
+        Expected: The `add n/RedoTestPerson` command is executed again. 
     3.  Test case: `delete 1`. Then `redo 1`.
         Expected: The `delete 1` command is executed again. If index 1 exists, it's deleted. If not, an "invalid index" error occurs for the *re-executed* delete.
 3.  Invalid redo index

@@ -413,6 +413,7 @@ Finds persons involved in relationships where their role in any relationship con
 
 **Examples**:
 * `findRelationship family friend` returns all persons where their role in any relationship containing "family" or "friend" as substrings. <br>
+![findRel.png](images/findRel.png) 
 
 ---
 
@@ -424,6 +425,7 @@ Finds persons whose tags contain any of the given keywords as a substring.
 
 **Example**:
 * `findTag colleague important` <br>
+![findTag.png](images/findTag.png) 
 
 ---
 
@@ -439,7 +441,9 @@ Sorts the address book by one or more fields.
 
 **Examples**:
 * `sort -r name phone` sorts the address book by name and phone in reverse order.
-* `sort email` sorts the address book by email. <br>
+* `sort email` sorts the address book by email. 
+* `sort phone name` sorts the address book by phone and name. <br>
+![sort.png](images/sortByPhoneByName.png) 
 
 ---
 
@@ -454,6 +458,8 @@ Re-executes a command from your command history.
 
 **Examples**:
 * `redo 3` re-executes the third last command.
+* In the picture, the third last command is `sort phone` <br>
+![redo.png](images/redo.png) 
 
 ---
 
@@ -469,6 +475,7 @@ Lists your command history from the current session.
 
 **Example**:
 * `redoList` lists the most recent commands executed (up to 10)
+![img.png](images/redoList.png) 
 
 ---
 
