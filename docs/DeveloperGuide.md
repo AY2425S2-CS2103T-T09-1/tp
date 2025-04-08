@@ -1108,7 +1108,7 @@ testers are expected to do more *exploratory* testing.
 2.  Redo a command
     1.  Prerequisites: Execute `add n/RedoTestPerson`. Then execute `list`. The `add` command should be at index 2 in `redoList`.
     2.  Test case: `redo 2`
-        Expected: The `add n/RedoTestPerson` command is executed again. An error "This person already exists..." should appear because the person was already added.
+        Expected: The `add n/RedoTestPerson` command is executed again. 
     3.  Test case: `delete 1`. Then `redo 1`.
         Expected: The `delete 1` command is executed again. If index 1 exists, it's deleted. If not, an "invalid index" error occurs for the *re-executed* delete.
 3.  Invalid redo index
