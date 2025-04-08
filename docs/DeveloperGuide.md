@@ -312,17 +312,6 @@ The `sort` command allows sorting the displayed person list based on one or more
 
 <img src="images/SortSequenceDiagram.png" alt="SortSequenceDiagram"/>
 
-### Important Note on Character Encoding
-
-**Limitation:** The case-insensitive substring matching in all find commands (`findName`, `findEmail`, etc.) and sorting operations work properly only with standard English alphabet characters. When using non-ASCII characters, especially those with special case mappings (like Turkish İ/ı and I/i), the behavior is undefined.
-
-**Technical Explanation:** The implementation uses Java's `toLowerCase()` method without specifying a locale, which applies default case mapping rules. This doesn't correctly handle locale-specific case mappings such as Turkish dotted/dotless i characters (where lowercase 'ı' corresponds to uppercase 'I', and lowercase 'i' corresponds to uppercase 'İ'). Similarly, sorting operations may not produce expected results when comparing strings with non-ASCII characters.
-
-**Example of Issue:**
-- When searching with Turkish characters, queries like `add n/A s/İ add n/B s/I findSocial s/I` may return unexpected results (returns both persons when only B should match).
-- When sorting lists containing non-ASCII characters, the order may not follow expected collation rules for certain languages and alphabets.
-
-**Workaround:** For reliable results, users should avoid non-ASCII characters in search queries and sortable fields, or be aware that case-insensitive matching and sorting might not work as expected with certain alphabets.
 
 ### Redo Command and Redo List Command
 
