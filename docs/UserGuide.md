@@ -530,6 +530,10 @@ When using find commands (like `findName`, `findPhone`, etc.) followed by sort c
 
 ## Planned enhancements
 1. **Use a simpler specifier for relationships**: Relationships currently work via specifying unique User IDs, since INcontact has a very permissive policy regarding similar or duplicate contact details. In future implementations, we will allow for specifying relationships by GUI number, as well as multistep selection (i.e. INcontact finds all matching users, and asks you to choose the specific user).
+2. **Improve character encoding for Find Commands**: Enhance all find commands (`findName`, `findPhone`, etc.) to work better with special characters and non-English alphabets (such as Turkish, Chinese, etc.) to provide more predictable search results when using special characters.
+3. **Improve character encoding for Sort Commands**: Enhance the sort functionality to better handle special characters and non-English alphabets, ensuring that sorting order follows expected language-specific rules regardless of character set.
+4. **Enhance Redo command functionality**: Modify the `redo` command to align with common redo implementations in other applications, focusing on reversing undo actions rather than re-executing specific commands from history.
+5. **Improve UI feedback for redoList Command**: Update the UI behavior when executing the `redoList` command so the command input bar is cleared properly and doesn't display as an error state. Implement proper command output handling instead of using exceptions for history information.
 
 --------------------------------------------------------------------------------------------------------------------
 
